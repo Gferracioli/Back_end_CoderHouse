@@ -4,7 +4,7 @@ class ProductManager {
   constructor(path) {
     this.products = [];
     this.nextId = 1;
-    this.path = path; // 1. Caminho onde os produtos serão armazenados
+    this.path = path; // Caminho onde os produtos serão armazenados
 
     // Carregar produtos do arquivo se já existir
     if (fs.existsSync(this.path)) {
@@ -14,7 +14,7 @@ class ProductManager {
     }
   }
 
-  // 3. Método para adicionar um produto e salvá-lo no arquivo
+  // Método para adicionar um produto e salvá-lo no arquivo
   addProduct(product) {
     const { title, description, price, thumbnail, code, stock } = product;
 
@@ -37,7 +37,7 @@ class ProductManager {
     fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
   }
 
-  // 4. Método para obter todos os produtos
+  //Método para obter todos os produtos
   getProducts() {
     try {
       const data = fs.readFileSync(this.path, 'utf-8');
@@ -48,7 +48,7 @@ class ProductManager {
     }
   }
 
-  // 5. Método para obter um produto pelo ID
+  //Método para obter um produto pelo ID
   getProductById(id) {
     try {
       const data = fs.readFileSync(this.path, 'utf-8');
@@ -65,7 +65,7 @@ class ProductManager {
     }
   }
 
-  // 6. Método para atualizar um produto
+  // Método para atualizar um produto
   updateProduct(id, updatedFields) {
     try {
       const data = fs.readFileSync(this.path, 'utf-8');
@@ -79,6 +79,23 @@ class ProductManager {
       fs.writeFileSync(this.path, JSON.stringify(products, null, 2));
     } catch (error) {
       console.error("Erro ao atualizar o produto", error);
+    }
+  }
+
+  // Método para deletar um produto
+  deleteProduct(id) {
+    try {
+      const data = fs.readFileSync(this.path, 'utf-8');
+      const products = JSON.parse(data);
+      const updatedProducts = products.filter(product => product.id != id);
+      if (products.length === updatedProducts.length) {
+        console.error("Produto não encontrado");
+        return;
+      }
+      fs.writeFileSync(this.path, JSON.stringify(updatedProducts, null, 2));
+      this.products = updatedProducts;
+    } catch (error) {
+      console.error("Erro ao deletar o produto", error);
     }
   }
 }
@@ -107,3 +124,5 @@ console.log(manager.getProducts()); // Retorna todos os produtos
 console.log(manager.getProductById(1)); // Produto 1
 manager.updateProduct(1, { price: 120, stock: 8 }); // Atualiza preço e estoque do Produto 1
 console.log(manager.getProductById(1)); // Produto 1 atualizado
+manager.deleteProduct(2); // Deleta Produto 2
+console.log(manager.getProducts()); // Retorna todos os produtos após exclusão
