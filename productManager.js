@@ -99,6 +99,7 @@ class ProductManager {
     }
   }
 }
+module.exports = ProductManager;
 
 // Exemplo de uso
 const manager = new ProductManager('products.json');
