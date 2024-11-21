@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos em Tempo Real</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Lista de Produtos em Tempo Real</h1>
+    <ul id="productsList">
+        <!-- Produtos serão renderizados dinamicamente aqui -->
+    </ul>
+
+    <button id="enviarMsg">Enviar Mensagem ao Servidor</button>
+
+    <script>
+        const socket = io();
+
+        // Listener para atualizar a lista de produtos em tempo real
+        socket.on('updateProducts', (products) => {
+            const productsList = document.getElementById('productsList');
+            productsList.innerHTML = '';
+            products.forEach(product => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${product.title} - ${product.description} - Preço: ${product.price}`;
+                productsList.appendChild(listItem);
+            });
+        });
+
+        // Listener para adicionar um novo produto
+        socket.on('newProduct', (product) => {
+            const productsList = document.getElementById('productsList');
+            const listItem = document.createElement('li');
+            listItem.textContent = `${product.title} - ${product.description} - Preço: ${product.price}`;
+            productsList.appendChild(listItem);
+        });
+
+        // Listener para remover um produto
+        socket.on('deleteProduct', (productId) => {
+            const productsList = document.getElementById('productsList');
+            const items = productsList.getElementsByTagName('li');
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].textContent.includes(`ID: ${productId}`)) {
+                    productsList.removeChild(items[i]);
+                    break;
+                }
+            }
+        });
+
+        // Enviar uma mensagem ao servidor
+        document.getElementById('enviarMsg').addEventListener('click', () => {
+            socket.emit('mensagem_cliente', 'Olá, servidor!');
+        });
+
+        socket.on('mensagem_servidor', (mensagem) => {
+            console.log('Mensagem do servidor:', mensagem);
+        });
+    </script>
+</body>
+</html>
